@@ -2,13 +2,35 @@
 
 namespace App;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use Notifiable;
+
+    public function role()
+    {
+        return $this->hasOne('elizabethSira\Role','id_role');
+    }
+
+    public function authorizeRoles($role){
+        if($role != null){
+            if($this->hasRole($role)){
+                return true;//se debe cambiar por una respuesta REST
+            }
+        }else{
+            return false;
+        }
+    }
+
+    public function hasRole($role){ //valida si un usuario tiene un rol
+        if($this->role()->where('name_role',$role)->first()){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +38,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','id_role'
     ];
 
     /**
